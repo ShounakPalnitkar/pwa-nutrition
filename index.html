@@ -2597,5 +2597,28 @@
             createRaindrops();
         });
     </script>
+    <script>
+  let deferredPrompt;
+  const installButton = document.getElementById('installButton');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent default mini-infobar
+    e.preventDefault();
+    // Save the event
+    deferredPrompt = e;
+    // Show your install button
+    installButton.style.display = 'flex';
+  });
+
+  installButton.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User response to install prompt: ${outcome}`);
+      deferredPrompt = null;
+      installButton.style.display = 'none';
+    }
+  });
+</script>
 </body>
 </html>
