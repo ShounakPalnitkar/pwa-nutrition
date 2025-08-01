@@ -3,10 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="manifest.json" />
     <title>AI-Powered Smart Plate</title>
+    <meta name="description" content="Budget-friendly meal planning and portion estimation powered by artificial intelligence">
+    <meta name="theme-color" content="#4a6fa5">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    
     <style>
         :root {
             --primary-color: #4a6fa5;
@@ -253,9 +261,6 @@
         }
         
         #chatbot-toggle {
-            <button id="installPWA" class="btn btn-primary" style="position: fixed; bottom: 90px; right: 20px; z-index: 1000; display: none;">
-    <i class="fas fa-download me-2"></i>Install App
-</button>
             background-color: var(--primary-color);
             color: white;
             border: none;
@@ -272,15 +277,6 @@
             z-index: 1001;
             cursor: pointer;
         }
-/* Add this for the PWA install button */
-#installPWA {
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    z-index: 1000;
-    display: none;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
         
         #chatbot-toggle i {
             font-size: 1.5rem;
@@ -515,9 +511,63 @@
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
         }
+        
+        /* PWA Install Button */
+        #installButton {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: none;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        #installButton:hover {
+            background-color: #3a5a8c;
+            transform: translateY(-2px);
+        }
+        
+        #installButton i {
+            font-size: 1.2rem;
+        }
+        
+        /* Offline notification */
+        #offlineNotification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ff7e5f;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: none;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
+    <!-- PWA Install Button -->
+    <button id="installButton">
+        <i class="fas fa-download"></i> Install App
+    </button>
+    
+    <!-- Offline Notification -->
+    <div id="offlineNotification">
+        You are currently offline. Some features may not be available.
+    </div>
+    
     <div id="raindrops-container"></div>
 
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
@@ -1771,6 +1821,74 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <script>
+        // Register service worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+
+        // PWA Install Button Logic
+        let deferredPrompt;
+        const installButton = document.getElementById('installButton');
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            // Show the install button
+            installButton.style.display = 'flex';
+            
+            installButton.addEventListener('click', async () => {
+                // Hide the install button
+                installButton.style.display = 'none';
+                // Show the install prompt
+                deferredPrompt.prompt();
+                // Wait for the user to respond to the prompt
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to the install prompt: ${outcome}`);
+                // We've used the prompt, and can't use it again, throw it away
+                deferredPrompt = null;
+            });
+        });
+        
+        window.addEventListener('appinstalled', () => {
+            // Hide the install button
+            installButton.style.display = 'none';
+            // Clear the deferredPrompt so it can be garbage collected
+            deferredPrompt = null;
+            console.log('PWA was installed');
+        });
+
+        // Check if the app is running in standalone mode
+        window.addEventListener('load', () => {
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                console.log('Running in standalone mode');
+                installButton.style.display = 'none';
+            }
+        });
+
+        // Offline detection
+        window.addEventListener('offline', () => {
+            document.getElementById('offlineNotification').style.display = 'block';
+        });
+
+        window.addEventListener('online', () => {
+            document.getElementById('offlineNotification').style.display = 'none';
+        });
+
+        // Check initial online status
+        if (!navigator.onLine) {
+            document.getElementById('offlineNotification').style.display = 'block';
+        }
+
         // Macronutrients Animation Functions
         function animateMacroCard(card) {
             card.style.transform = 'scale(1.05)';
