@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Smart Plate</title>
+    <meta name="theme-color" content="#4a6fa5">
+    <meta name="description" content="Budget-friendly meal planning and portion estimation powered by artificial intelligence">
+    <link rel="manifest" href="/manifest.json">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cae;
+            --accent-color: #ff7e5f;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        .raindrop {
+            position: absolute;
+            width: 2px;
+            height: 10px;
+            background: rgba(74, 111, 165, 0.3);
+            border-radius: 0 0 5px 5px;
+            animation: rain linear infinite;
+            z-index: -1;
+        }
+        
+        @keyframes rain {
+            0% {
+                transform: translateY(-100px) rotate(10deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(100vh) rotate(10deg);
+                opacity: 0;
+            }
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .hero-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+        
+        .assessment-form {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a5a8c;
+            border-color: #3a5a8c;
+        }
+        
+        .dashboard-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .nutrient-progress {
+            height: 10px;
+            border-radius: 5px;
+        }
+        
+        .meal-card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+            margin-bottom: 1.5rem;
+        }
+        
+        .meal-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .meal-img {
+            height: 180px;
+            object-fit: cover;
+        }
+        
+        .report-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        
+        /* Macronutrients Animation Styles */
+        .macro-animation-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .macro-animation-scene {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .macros-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin: 40px 0;
+        }
+        
+        .macro-card {
+            width: 30%;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .macro-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .macro-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .quiz-option {
+            padding: 10px;
+            margin: 10px 0;
+            background: #f5f5f5;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .quiz-option:hover {
+            background: #e0e0e0;
+        }
+        
+        .correct {
+            background: #c8e6c9 !important;
+        }
+        
+        .incorrect {
+            background: #ffcdd2 !important;
+        }
+        
+        .macro-feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Chatbot styles */
+        #chatbot-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            display: none;
+        }
+        
+        #chatbot-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        #chatbot-toggle {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            cursor: pointer;
+        }
+        
+        #chatbot-toggle i {
+            font-size: 1.5rem;
+        }
+        
+        .bp-widget {
+            border: none !important;
+            border-radius: 0 0 10px 10px !important;
+        }
+        
+        .nutrient-info {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .nutrient-info h5 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .nutrient-info ul {
+            padding-left: 20px;
+            margin-bottom: 0;
+        }
+        
+        /* BMI Table Styles */
+        .bmi-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        .bmi-table th, .bmi-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        .bmi-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .bmi-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        /* Recipe Cards */
+        .recipe-card {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            margin-bottom: 2rem;
+            background: white;
+        }
+        
+        .recipe-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .recipe-img {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+        
+        .recipe-body {
+            padding: 1.5rem;
+        }
+        
+        .recipe-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .recipe-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 1rem;
+        }
+        
+        .recipe-meta span {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .recipe-meta i {
+            margin-right: 5px;
+            color: var(--accent-color);
+        }
+        
+        .badge-veg {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .badge-vegan {
+            background-color: #20c997;
+            color: white;
+        }
+        
+        .badge-gluten-free {
+            background-color: #6f42c1;
+            color: white;
+        }
+
+        /* Recipe Modal */
+        .recipe-modal .modal-content {
+            border-radius: 15px;
+        }
+        
+        .recipe-modal .modal-header {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .recipe-modal .modal-body {
+            padding-top: 0;
+        }
+        
+        .recipe-modal img {
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+        
+        .recipe-modal .ingredients {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .recipe-modal .instructions {
+            margin-bottom: 15px;
+        }
+        
+        .recipe-modal .nutrition-facts {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        /* Report Download Buttons */
+        .download-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .download-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* Share Modal */
+        .share-modal .modal-content {
+            border-radius: 15px;
+        }
+
+        .share-options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .share-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .share-option:hover {
+            background-color: #f8f9fa;
+        }
+
+        .share-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        /* Nutrient color coding */
+        .nutrient-excellent {
+            background-color: #28a745 !important;
+        }
+
+        .nutrient-good {
+            background-color: #6bbaa7 !important;
+        }
+
+        .nutrient-fair {
+            background-color: #f6c667 !important;
+        }
+
+        .nutrient-poor {
+            background-color: #ff7e5f !important;
+        }
+
+        /* Cost indicator */
+        .cost-within {
+            color: #28a745;
+        }
+
+        .cost-over {
+            color: #dc3545;
+        }
+
+        /* Share link input */
+        .share-link-input {
+            display: flex;
+            margin-top: 15px;
+        }
+
+        .share-link-input input {
+            flex: 1;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .share-link-input button {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        /* Install button */
+        #installContainer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        #installButton {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        #installButton:hover {
+            background-color: #3a5a8c;
+        }
+    </style>
+</head>
+<body>
+    <div id="raindrops-container"></div>
+
+    <!-- Install Button Container -->
+    <div id="installContainer">
+        <button id="installButton" class="btn btn-primary">
+            <i class="fas fa-download me-1"></i> Install App
+        </button>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-utensils me-2"></i>Smart Plate AI
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#recipes">Recipes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#assessment">Assessment</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#dashboard">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#report">Report</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Rest of your HTML content remains exactly the same -->
+    <section class="container hero-section">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">AI-Powered Smart Plate</h1>
+                <p class="lead mb-4">Budget-friendly meal planning and portion estimation powered by artificial intelligence to help you eat healthier while saving money.</p>
+                <div class="d-flex gap-3">
+                    <a href="#assessment" class="btn btn-primary btn-lg px-4">Get Started</a>
+                    <a href="#recipes" class="btn btn-outline-secondary btn-lg px-4">Explore Recipes</a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Healthy food" class="img-fluid rounded">
+            </div>
+        </div>
+    </section>
+
+    <!-- All other sections remain exactly the same -->
+    <!-- ... -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <script>
+        // PWA Installation Logic
+        let deferredPrompt;
+        const installButton = document.getElementById('installButton');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            // Show the install button
+            installButton.style.display = 'block';
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            
+            // Show the install prompt
+            deferredPrompt.prompt();
+            
+            // Wait for the user to respond to the prompt
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            // Optionally, send analytics event with outcome of user choice
+            console.log(`User response to the install prompt: ${outcome}`);
+            
+            // We've used the prompt, and can't use it again, throw it away
+            deferredPrompt = null;
+            
+            // Hide the install button
+            installButton.style.display = 'none';
+        });
+
+        window.addEventListener('appinstalled', () => {
+            // Hide the install button
+            installButton.style.display = 'none';
+            // Clear the deferredPrompt so it can be garbage collected
+            deferredPrompt = null;
+            // Optionally, send analytics event to indicate successful install
+            console.log('PWA was installed');
+        });
+
+        // Check if the app is running as a PWA
+        window.addEventListener('load', () => {
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                console.log('Running as PWA');
+                installButton.style.display = 'none';
+            }
+        });
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(registration => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, err => {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+
+        // Rest of your existing JavaScript remains exactly the same
+        // Macronutrients Animation Functions
+        function animateMacroCard(card) {
+            card.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                card.style.transform = 'scale(1)';
+            }, 300);
+        }
+        
+        function checkMacroAnswer(option, isCorrect) {
+            const feedback = document.getElementById('macro-feedback');
+            const options = document.querySelectorAll('#macro-quiz .quiz-option');
+            
+            options.forEach(opt => {
+                opt.onclick = null; // Disable further clicks
+            });
+            
+            if (isCorrect) {
+                option.classList.add('correct');
+                feedback.style.display = 'block';
+                feedback.style.background = '#c8e6c9';
+            } else {
+                option.classList.add('incorrect');
+                feedback.style.display = 'block';
+                feedback.style.background = '#ffcdd2';
+                feedback.innerHTML = '<strong>Oops!</strong> Fats actually provide 9 calories per gram—the most energy-dense macro.';
+            }
+        }
+
+        function createRaindrops() {
+            const container = document.getElementById('raindrops-container');
+            const windowWidth = window.innerWidth;
+            const dropsCount = Math.floor(windowWidth / 20);
+            
+            for (let i = 0; i < dropsCount; i++) {
+                const drop = document.createElement('div');
+                drop.classList.add('raindrop');
+                
+                const left = Math.random() * windowWidth;
+                const animationDuration = 1 + Math.random() * 2;
+                const animationDelay = Math.random() * 5;
+                const opacity = 0.2 + Math.random() * 0.3;
+                const height = 5 + Math.random() * 15;
+                
+                drop.style.left = `${left}px`;
+                drop.style.animationDuration = `${animationDuration}s`;
+                drop.style.animationDelay = `${animationDelay}s`;
+                drop.style.opacity = opacity;
+                drop.style.height = `${height}px`;
+                
+                container.appendChild(drop);
+            }
+        }
+        
+        // ... rest of your existing JavaScript ...
+    </script>
+</body>
+</html>
