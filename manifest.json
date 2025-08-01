@@ -1,11 +1,11 @@
 {
   "name": "Smart Plate AI",
   "short_name": "SmartPlate",
-  "description": "AI-powered nutrition and meal planning app",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f5f7fa",
+  "background_color": "#4a6fa5",
   "theme_color": "#4a6fa5",
+  "description": "Budget-friendly meal planning and portion estimation powered by AI",
   "icons": [
     {
       "src": "icons/icon-192x192.png",
